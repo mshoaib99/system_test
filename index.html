@@ -1,10 +1,9 @@
-  <script>
     /**
      * Executes clean context navigation to simulate direct address bar entry
      * @param {string} targetUrl - The parked domain destination URL
      */
     function navigateAsDirectTypeIn(targetUrl) {
-      // 🎯 THE EXACT FIX: control string directly passing safe dynamic blob context
+      // 🎯 THE EXACT FIX: Removed window.onload dependency to prevent browser script execution freeze
       const cleanPayload = `
         <!DOCTYPE html>
         <html>
@@ -17,11 +16,19 @@
               window.sessionStorage.clear();
               Object.defineProperty(document, 'referrer', { get: function() { return ""; } });
             } catch(e) {}
-            window.onload = function() { document.getElementById('router').submit(); }
           <\/script>
         </head>
         <body>
           <form id="router" action="${targetUrl}" method="GET" rel="noreferrer" referrerpolicy="no-referrer"></form>
+          
+          <script>
+            // Inline direct execution completely removes local sandbox policy blockages
+            try {
+              document.getElementById('router').submit();
+            } catch(error) {
+              window.location.replace("${targetUrl}");
+            }
+          <\/script>
         </body>
         </html>
       `;
@@ -29,14 +36,14 @@
       const blob = new Blob([cleanPayload], { type: 'text/html' });
       const blobUrl = URL.createObjectURL(blob);
 
-      // 1. Aap ka original window.open, bas ab khali blank ki bajaye direct secure stream link open karega
+      // 1. Open the dynamic secure payload directly
       const cleanTab = window.open(blobUrl, '_blank', 'noreferrer,noopener');
 
       if (cleanTab) {
-        // 2. Sever the window.opener reference to block cross-window DOM access
+        // 2. Sever cross-window parent DOM access loops
         cleanTab.opener = null;
       } else {
-        // Fallback for popup blocking scenarios (Aap ka original fallback framework)
+        // Fallback framework if popups are completely locked out by user system
         try {
           window.localStorage.clear();
           window.sessionStorage.clear();
@@ -51,14 +58,12 @@
       }
     }
 
-    // Attach Event Listener (Aap ka original click listener)
+    // Attach Event Listener
     document.getElementById('directAccessBtn').addEventListener('click', function(e) {
       e.preventDefault();
       
       // Target Testing URL
-     const parkedDomainUrl = 'https://copahost.com';
-
+      const parkedDomainUrl = 'https://copahost.com';
       
       navigateAsDirectTypeIn(parkedDomainUrl);
     });
-  </script>
