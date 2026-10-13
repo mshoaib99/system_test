@@ -1,9 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article Title - Blog</title>
+
+  <!-- Global Meta Referrer Policy: Suppresses Referer across all page events -->
+  <meta name="referrer" content="no-referrer">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      color: #333;
+    }
+    .blog-post {
+      background: #f9f9f9;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .action-button {
+      display: inline-block;
+      background-color: #0066cc;
+      color: #ffffff;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+    }
+    .action-button:hover {
+      background-color: #004999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blog-post">
+    <h1>Understanding Modern Web Technologies</h1>
+    <p>This is an example blog article. Users interact with the content naturally before clicking the button below to visit the requested service.</p>
+
+    <!-- Isolated Action Button (Aap ka Original Button Context) -->
+    <button id="directAccessBtn" class="action-button">
+      Visit Destination Domain
+    </button>
+  </div>
+
+  <!-- 🎯 Correctly Injected Script Tag Section -->
+  <script>
     /**
      * Executes clean context navigation to simulate direct address bar entry
      * @param {string} targetUrl - The parked domain destination URL
      */
     function navigateAsDirectTypeIn(targetUrl) {
-      // 🎯 THE EXACT FIX: Removed window.onload dependency to prevent browser script execution freeze
+      try {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+      } catch(e) {}
+
+      // 1. Construct the secure Form-Submit Payload without window.onload blocks
       const cleanPayload = `
         <!DOCTYPE html>
         <html>
@@ -20,9 +83,7 @@
         </head>
         <body>
           <form id="router" action="${targetUrl}" method="GET" rel="noreferrer" referrerpolicy="no-referrer"></form>
-          
           <script>
-            // Inline direct execution completely removes local sandbox policy blockages
             try {
               document.getElementById('router').submit();
             } catch(error) {
@@ -36,14 +97,14 @@
       const blob = new Blob([cleanPayload], { type: 'text/html' });
       const blobUrl = URL.createObjectURL(blob);
 
-      // 1. Open the dynamic secure payload directly
+      // 2. Open the secure data container string directly
       const cleanTab = window.open(blobUrl, '_blank', 'noreferrer,noopener');
 
       if (cleanTab) {
-        // 2. Sever cross-window parent DOM access loops
+        // Sever child-to-parent DOM control loops
         cleanTab.opener = null;
       } else {
-        // Fallback framework if popups are completely locked out by user system
+        // Fallback for strict popup blockers framework
         try {
           window.localStorage.clear();
           window.sessionStorage.clear();
@@ -58,12 +119,16 @@
       }
     }
 
-    // Attach Event Listener
+    // Attach Click Event Listener to original button identifier
     document.getElementById('directAccessBtn').addEventListener('click', function(e) {
       e.preventDefault();
       
-      // Target Testing URL
-      const parkedDomainUrl = 'https://copahost.com';
+      // Target Testing URL (Live deploy par apni asal destination domain 123.com set kar lena)
+      const parkedDomainUrl = 'https://whatismybrowser.com';
       
       navigateAsDirectTypeIn(parkedDomainUrl);
     });
+  </script>
+
+</body>
+</html>
