@@ -3,27 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Understanding Modern Web Technologies - Blog</title>
+  <title>Article Title - Blog</title>
 
-  <!-- Global level par referrer ko 100% block karne ki sakht hidayat -->
+  <!-- Global Meta Referrer Policy: Suppresses Referer across all page events -->
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 20px; color: #333;">
 
-  <div style="background: #f9f9f9; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      color: #333;
+    }
+    .blog-post {
+      background: #f9f9f9;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .action-button {
+      display: inline-block;
+      background-color: #0066cc;
+      color: #ffffff;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+    }
+    .action-button:hover {
+      background-color: #004999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blog-post">
     <h1>Understanding Modern Web Technologies</h1>
     <p>This is an example blog article. Users interact with the content naturally before clicking the button below to visit the requested service.</p>
 
-    <!-- 🎯 The Bulletproof Form-Action Link (Bypasses all New Chrome Popup Restrictions) -->
-    <a href="https://whatismybrowser.com" 
-       target="_blank" 
-       rel="noreferrer noopener" 
-       referrerpolicy="no-referrer"
-       style="display: inline-block; background-color: #0066cc; color: #ffffff; padding: 14px 28px; font-size: 16px; font-weight: bold; border: none; border-radius: 5px; text-decoration: none; margin-top: 20px;">
+    <!-- Isolated Action Button (Aap ka Original Button) -->
+    <button id="directAccessBtn" class="action-button">
       Visit Destination Domain
-    </a>
+    </button>
   </div>
+
+  <script>
+    /**
+     * Executes clean context navigation utilizing modern isolated binary stream injection
+     * @param {string} targetUrl - The parked domain destination URL
+     */
+    function navigateAsDirectTypeIn(targetUrl) {
+      try {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+      } catch(e) {}
+
+      // 1. Construct the secure Form-Submit Payload (Mere Form Submit aur Aap ke Storage clear ka combination)
+      const cleanPayload = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="referrer" content="no-referrer">
+          <title>Redirecting...</title>
+          <script>
+            try {
+              window.localStorage.clear();
+              window.sessionStorage.clear();
+              Object.defineProperty(document, 'referrer', { get: function() { return ""; } });
+            } catch(e) {}
+
+            window.onload = function() {
+              document.getElementById('secureRouter').submit();
+            }
+          <\/script>
+        </head>
+        <body>
+          <form id="secureRouter" action="${targetUrl}" method="GET" rel="noreferrer" referrerpolicy="no-referrer"></form>
+        </body>
+        </html>
+      `;
+
+      // 2. Convert payload to an absolute isolated safe origin using Blob
+      const blob = new Blob([cleanPayload], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 3. Open directly inside a fresh window context (Bypasses Chrome v140 Sandbox Block)
+      const cleanTab = window.open(blobUrl, '_blank', 'noreferrer,noopener');
+
+      if (cleanTab) {
+        // Sever cross-window parent DOM access loops
+        cleanTab.opener = null;
+      } else {
+        // 4. Fallback: If popup blocker completely denies window launch, submit via same-tab form to protect referrer
+        const fallbackForm = document.createElement('form');
+        fallbackForm.action = targetUrl;
+        fallbackForm.method = 'GET';
+        fallbackForm.setAttribute('rel', 'noreferrer');
+        fallbackForm.setAttribute('referrerpolicy', 'no-referrer');
+        document.body.appendChild(fallbackForm);
+        fallbackForm.submit();
+      }
+    }
+
+    // Attach Event Listener
+    document.getElementById('directAccessBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Target Testing URL (Live deploy karte waqt yahan apni real parked domain 123.com laga lena)
+      const parkedDomainUrl = 'https://whatismybrowser.com';
+      
+      navigateAsDirectTypeIn(parkedDomainUrl);
+    });
+  </script>
 
 </body>
 </html>
