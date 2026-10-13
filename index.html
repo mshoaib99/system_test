@@ -48,85 +48,28 @@
     <h1>Understanding Modern Web Technologies</h1>
     <p>This is an example blog article. Users interact with the content naturally before clicking the button below to visit the requested service.</p>
 
-    <!-- Isolated Action Button (Aap ka Original Button Context) -->
-    <button id="directAccessBtn" class="action-button">
+    <!-- 🎯 THE ULTIMATE FIX: HTML Link replacement forces browser native routing -->
+    <!-- target="_blank" guarantees exactly ONE new tab, rel="noreferrer" hides your website completely -->
+    <a href="https://whatismybrowser.com" 
+       id="directAccessBtn" 
+       class="action-button" 
+       target="_blank" 
+       rel="noreferrer noopener" 
+       referrerpolicy="no-referrer">
       Visit Destination Domain
-    </button>
+    </a>
   </div>
 
-  <!-- 🎯 Correctly Injected Script Tag Section -->
   <script>
-    /**
-     * Executes clean context navigation to simulate direct address bar entry
-     * @param {string} targetUrl - The parked domain destination URL
-     */
-    function navigateAsDirectTypeIn(targetUrl) {
+    // Safe memory handler inside your existing script block
+    document.getElementById('directAccessBtn').addEventListener('click', function(e) {
       try {
+        // Erase browser storage trails before moving to next tab
         window.localStorage.clear();
         window.sessionStorage.clear();
-      } catch(e) {}
-
-      // 1. Construct the secure Form-Submit Payload without window.onload blocks
-      const cleanPayload = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="referrer" content="no-referrer">
-          <script>
-            try {
-              window.localStorage.clear();
-              window.sessionStorage.clear();
-              Object.defineProperty(document, 'referrer', { get: function() { return ""; } });
-            } catch(e) {}
-          <\/script>
-        </head>
-        <body>
-          <form id="router" action="${targetUrl}" method="GET" rel="noreferrer" referrerpolicy="no-referrer"></form>
-          <script>
-            try {
-              document.getElementById('router').submit();
-            } catch(error) {
-              window.location.replace("${targetUrl}");
-            }
-          <\/script>
-        </body>
-        </html>
-      `;
+      } catch(error) {}
       
-      const blob = new Blob([cleanPayload], { type: 'text/html' });
-      const blobUrl = URL.createObjectURL(blob);
-
-      // 2. Open the secure data container string directly
-      const cleanTab = window.open(blobUrl, '_blank', 'noreferrer,noopener');
-
-      if (cleanTab) {
-        // Sever child-to-parent DOM control loops
-        cleanTab.opener = null;
-      } else {
-        // Fallback for strict popup blockers framework
-        try {
-          window.localStorage.clear();
-          window.sessionStorage.clear();
-        } catch(e) {}
-        
-        const metaPolicy = document.createElement('meta');
-        metaPolicy.name = 'referrer';
-        metaPolicy.content = 'no-referrer';
-        document.head.appendChild(metaPolicy);
-        
-        window.location.replace(targetUrl);
-      }
-    }
-
-    // Attach Click Event Listener to original button identifier
-    document.getElementById('directAccessBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      // Target Testing URL (Live deploy par apni asal destination domain 123.com set kar lena)
-      const parkedDomainUrl = 'https://whatismybrowser.com';
-      
-      navigateAsDirectTypeIn(parkedDomainUrl);
+      // We do NOT block default link action, letting browser open exactly one new tab naturally
     });
   </script>
 
