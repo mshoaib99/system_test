@@ -1,72 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Understanding Modern Web Technologies - Informational Blog</title>
-
-  <!-- Global Meta Referrer Policy: Suppresses Referer across all page events -->
-  <meta name="referrer" content="no-referrer">
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      color: #333;
-    }
-    .blog-post {
-      background: #f9f9f9;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .action-button {
-      display: inline-block;
-      background-color: #0066cc;
-      color: #ffffff;
-      padding: 14px 28px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      margin-top: 20px;
-      transition: background 0.3s ease;
-    }
-    .action-button:hover {
-      background-color: #004999;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="blog-post">
-    <h1>Understanding Modern Web Technologies</h1>
-    <p>This is an example blog article. Users interact with the content naturally before clicking the button below to visit the requested service.</p>
-
-    <!-- 🎯 The Bulletproof Form Element: Target="_blank" forces single new window open -->
-    <!-- Method="GET" aur rel="noreferrer" browser ko direct navigation simulate karne par majboor karta hai -->
-    <form id="secureRouterForm" action="https://whatismybrowser.com" method="GET" target="_blank" rel="noreferrer noopener" referrerpolicy="no-referrer">
-      <button type="submit" id="directAccessBtn" class="action-button">
-        Visit Destination Domain
-      </button>
-    </form>
-  </div>
-
   <script>
-    // Advanced storage eraser signature handler
-    document.getElementById('secureRouterForm').addEventListener('submit', function(e) {
-      try {
-        // Clear local storage data tracks on runtime before target document loads
-        window.localStorage.clear();
-        window.sessionStorage.clear();
-      } catch(error) {}
+    /**
+     * Executes clean context navigation to simulate direct address bar entry
+     * @param {string} targetUrl - The parked domain destination URL
+     */
+    function navigateAsDirectTypeIn(targetUrl) {
+      // 🎯 THE EXACT FIX: control string directly passing safe dynamic blob context
+      const cleanPayload = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="referrer" content="no-referrer">
+          <script>
+            try {
+              window.localStorage.clear();
+              window.sessionStorage.clear();
+              Object.defineProperty(document, 'referrer', { get: function() { return ""; } });
+            } catch(e) {}
+            window.onload = function() { document.getElementById('router').submit(); }
+          <\/script>
+        </head>
+        <body>
+          <form id="router" action="${targetUrl}" method="GET" rel="noreferrer" referrerpolicy="no-referrer"></form>
+        </body>
+        </html>
+      `;
+      
+      const blob = new Blob([cleanPayload], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 1. Aap ka original window.open, bas ab khali blank ki bajaye direct secure stream link open karega
+      const cleanTab = window.open(blobUrl, '_blank', 'noreferrer,noopener');
+
+      if (cleanTab) {
+        // 2. Sever the window.opener reference to block cross-window DOM access
+        cleanTab.opener = null;
+      } else {
+        // Fallback for popup blocking scenarios (Aap ka original fallback framework)
+        try {
+          window.localStorage.clear();
+          window.sessionStorage.clear();
+        } catch(e) {}
+        
+        const metaPolicy = document.createElement('meta');
+        metaPolicy.name = 'referrer';
+        metaPolicy.content = 'no-referrer';
+        document.head.appendChild(metaPolicy);
+        
+        window.location.replace(targetUrl);
+      }
+    }
+
+    // Attach Event Listener (Aap ka original click listener)
+    document.getElementById('directAccessBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Target Testing URL
+      const parkedDomainUrl = 'https://whatismybrowser.com';
+      
+      navigateAsDirectTypeIn(parkedDomainUrl);
     });
   </script>
-
-</body>
-</html>
